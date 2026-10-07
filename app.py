@@ -10,11 +10,21 @@ FILE = os.path.join(os.path.dirname(__file__), 'data.xlsx')
 
 
 def auth_required(fn):
+
     @wraps(fn)
+
     def wrapper(*args, **kwargs):
+
         if not session.get('ok'):
-            return jsonify({'error':'unauthorized'}), 401 if request.path.startswith('/api/') else redirect(url_for('login'))
+
+            if request.path.startswith('/api/'):
+
+                return jsonify({'error': 'unauthorized'}), 401
+
+            return redirect(url_for('login'))
+
         return fn(*args, **kwargs)
+
     return wrapper
 
 @app.route('/login', methods=['GET','POST'])
